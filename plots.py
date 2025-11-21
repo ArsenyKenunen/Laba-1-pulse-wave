@@ -51,7 +51,14 @@ plt.ylabel("delta pressure, mmHg")
 plt.title("Blood pressure over time before physical activity: pulses")
 show_plot()
 
+y_diff = np.gradient(y_cutted, (max(x_cutted) - min(x_cutted)) / len(x_cutted))
+plt.scatter(x_cutted, y_diff, s=1)
+plt.ylabel("d(pressure)/dt, mmHg/s")
+plt.title("Blood pressure over time before physical activity: diff pulses")
+show_plot()
 
+
+"""
 x, y = list(), list()
 with open("measure_after.csv") as after:
     for line in after.readlines():
@@ -75,6 +82,7 @@ plt.scatter(x_cutted, y_cutted, s=1)
 plt.ylabel("delta pressure, mmHg")
 plt.title("Blood pressure over time after physical activity: pulses")
 show_plot()
+"""
 
 
 plt.close()
