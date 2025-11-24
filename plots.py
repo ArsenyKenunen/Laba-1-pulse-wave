@@ -5,7 +5,7 @@ import numpy as np
 b = 0.14963690399777596
 k = 0.011793942035391742
 
-window_size = 15
+window_size = 35
 
 
 def show_plot():
@@ -27,6 +27,7 @@ def cut_above_threshold(active_array, copying_array, threshold):
 
 plt.figure(figsize=(11, 8))
 
+# до нагрузки
 x, y = list(), list()
 with open("measure_before.csv") as before:
     for line in before.readlines():
@@ -41,6 +42,7 @@ y_trend = trend_poly(x)
 y_smooth = np.convolve(y, np.ones(window_size) / window_size, mode='same')
 
 plt.scatter(x, y_smooth, s=1)
+plt.plot(x, y_trend, color='red')
 plt.ylabel("blood pressure, mmHg")
 plt.title("Blood pressure over time before physical activity")
 show_plot()
@@ -57,8 +59,15 @@ plt.ylabel("d(pressure)/dt, mmHg/s")
 plt.title("Blood pressure over time before physical activity: diff pulses")
 show_plot()
 
+window_size = 40
+y_diff_smooth = np.convolve(y_diff, np.ones(window_size) / window_size, mode='same')
+plt.scatter(x, y_diff_smooth, s=1)
+plt.ylabel("d(pressure)/dt, mmHg/s")
+plt.title("Blood pressure over time before physical activity: diff pulses smoothing")
+show_plot()
 
-"""
+
+# после нагрузки
 x, y = list(), list()
 with open("measure_after.csv") as after:
     for line in after.readlines():
@@ -72,17 +81,29 @@ trend_poly = np.poly1d(np.polyfit(x, y, 5))
 y_trend = trend_poly(x)
 y_smooth = np.convolve(y, np.ones(window_size)/window_size, mode='same')
 
-plt.scatter(x, y_smooth, s=1)
+plt.scatter(x, y_smooth, s=1, color='green')
+plt.plot(x, y_trend, color='red')
 plt.ylabel("blood pressure, mmHg")
 plt.title("Blood pressure over time after physical activity")
 show_plot()
 
-y_cutted, x_cutted = cut_above_threshold(y_smooth - y_trend, x, -2)
-plt.scatter(x_cutted, y_cutted, s=1)
+y_cutted, x_cutted = cut_above_threshold(y_smooth - y_trend + .2, x, -2)
+plt.scatter(x_cutted, y_cutted, s=1, color='green')
 plt.ylabel("delta pressure, mmHg")
 plt.title("Blood pressure over time after physical activity: pulses")
 show_plot()
-"""
 
+y_diff = np.gradient(y_smooth, (max(x) - min(x)) / len(x))
+plt.scatter(x, y_diff, s=1, color='green')
+plt.ylabel("d(pressure)/dt, mmHg/s")
+plt.title("Blood pressure over time after physical activity: diff pulses")
+show_plot()
+
+window_size = 40
+y_diff_smooth = np.convolve(y_diff, np.ones(window_size) / window_size, mode='same')
+plt.scatter(x, y_diff_smooth, s=1, color='green')
+plt.ylabel("d(pressure)/dt, mmHg/s")
+plt.title("Blood pressure over time after physical activity: diff pulses smoothing")
+show_plot()
 
 plt.close()
