@@ -54,18 +54,28 @@ plt.title("Blood pressure over time before physical activity: pulses")
 show_plot()
 
 y_diff = np.gradient(y_smooth, (max(x) - min(x)) / len(x))
-plt.scatter(x, y_diff, s=1)
-plt.ylabel("d(pressure)/dt, mmHg/s")
-plt.title("Blood pressure over time before physical activity: diff pulses")
-show_plot()
-
 window_size = 40
 y_diff_smooth = np.convolve(y_diff, np.ones(window_size) / window_size, mode='same')
-plt.scatter(x, y_diff_smooth, s=1)
+
+x_min = 10.00029468536377
+x_max = 20.924737453460693
+threshold = 5
+i = int(np.where(x == x_min)[0])
+j = int(np.where(x == x_max)[0])
+
+k = i
+times = list()
+while k < j:
+    if y_diff_smooth[k] >= threshold:
+        k += int((j - i) * 0.05)
+        times.append(x[k])
+    k += 1
+print("Pulse before:", (len(times) - 1) / (times[-1] - times[0]) * 60, "bpm")
+
+plt.scatter(x[i:j], y_diff_smooth[i:j], s=1)
 plt.ylabel("d(pressure)/dt, mmHg/s")
 plt.title("Blood pressure over time before physical activity: diff pulses smoothing")
 show_plot()
-
 
 # после нагрузки
 x, y = list(), list()
@@ -94,14 +104,25 @@ plt.title("Blood pressure over time after physical activity: pulses")
 show_plot()
 
 y_diff = np.gradient(y_smooth, (max(x) - min(x)) / len(x))
-plt.scatter(x, y_diff, s=1, color='green')
-plt.ylabel("d(pressure)/dt, mmHg/s")
-plt.title("Blood pressure over time after physical activity: diff pulses")
-show_plot()
-
 window_size = 40
 y_diff_smooth = np.convolve(y_diff, np.ones(window_size) / window_size, mode='same')
-plt.scatter(x, y_diff_smooth, s=1, color='green')
+
+x_min = 5.0039122104644775
+x_max = 15.209056854248047
+threshold = 0
+i = int(np.where(x == x_min)[0])
+j = int(np.where(x == x_max)[0])
+
+k = i
+times = list()
+while k < j:
+    if y_diff_smooth[k] >= threshold:
+        k += int((j - i) * 0.05)
+        times.append(x[k])
+    k += 1
+print("Pulse after:", (len(times) - 1) / (times[-1] - times[0]) * 60, "bpm")
+
+plt.scatter(x[i:j], y_diff_smooth[i:j], s=1, color='green')
 plt.ylabel("d(pressure)/dt, mmHg/s")
 plt.title("Blood pressure over time after physical activity: diff pulses smoothing")
 show_plot()
